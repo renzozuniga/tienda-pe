@@ -1,0 +1,41 @@
+openapi: 3.1.0
+info:
+  title: Tienda PE API
+  version: 0.1.0
+  description: |
+    API de la tienda. Fuente de verdad del contrato entre apps/api y apps/web.
+    Los montos de dinero se expresan en céntimos (entero) y en soles (PEN).
+servers:
+  - url: http://localhost:3001
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      summary: Estado de la API y de la base de datos
+      responses:
+        '200':
+          description: La API y la base de datos responden
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Health' }
+        '503':
+          description: La API responde pero la base de datos no
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Health' }
+components:
+  schemas:
+    Health:
+      type: object
+      additionalProperties: false
+      required: [status, db, uptimeSeconds]
+      properties:
+        status:
+          type: string
+          enum: [ok, degraded]
+        db:
+          type: string
+          enum: [ok, down]
+        uptimeSeconds:
+          type: number
+          minimum: 0

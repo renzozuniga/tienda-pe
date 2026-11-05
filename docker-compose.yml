@@ -1,0 +1,20 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: tienda-pe-db
+    environment:
+      POSTGRES_USER: tienda
+      POSTGRES_PASSWORD: tienda
+      POSTGRES_DB: tienda
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - tienda-pe-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tienda -d tienda"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  tienda-pe-data:

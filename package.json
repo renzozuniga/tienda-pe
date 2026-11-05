@@ -1,0 +1,21 @@
+{
+  "name": "tienda-pe",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.17.1",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev": "pnpm -r --parallel --filter ./apps/* dev",
+    "dev:api": "pnpm --filter @tienda/api dev",
+    "dev:web": "pnpm --filter @tienda/web dev",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "typecheck": "pnpm -r typecheck",
+    "contracts:generate": "pnpm --filter @tienda/contracts generate",
+    "db:up": "docker compose up -d --wait",
+    "db:down": "docker compose down",
+    "db:migrate": "pnpm --filter @tienda/api db:migrate",
+    "db:seed": "pnpm --filter @tienda/api db:seed",
+    "bootstrap": "pnpm install && pnpm db:up && pnpm db:migrate && pnpm db:seed"
+  }
+}
