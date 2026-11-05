@@ -8,12 +8,7 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: [
-      '**/dist/**',
-      '**/coverage/**',
-      'apps/api/src/generated/**',
-      'packages/contracts/src/schema.ts',
-    ],
+    ignores: ['**/dist/**', '**/coverage/**', 'apps/api/src/generated/**', 'packages/contracts/src/schema.ts'],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,

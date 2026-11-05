@@ -30,7 +30,10 @@ describe('App', () => {
 
   it('muestra un error si la API no responde', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
-    vi.stubGlobal('fetch', vi.fn(async () => Promise.reject(new TypeError('Failed to fetch'))));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => Promise.reject(new TypeError('Failed to fetch'))),
+    );
     render(<App />);
 
     expect(await screen.findByText(/No pudimos conectar con la API/)).toBeInTheDocument();
