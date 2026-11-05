@@ -5,6 +5,7 @@
   padding-left: max(var(--space-4), env(safe-area-inset-left, 0px));
   padding-right: max(var(--space-4), env(safe-area-inset-right, 0px));
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-8);
 }
 .header {

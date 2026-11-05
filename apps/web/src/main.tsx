@@ -2,22 +2,20 @@ import '@fontsource-variable/geist';
 import '@fontsource-variable/geist-mono';
 import './styles/tokens.css';
 import './styles/base.css';
-import { lazy, StrictMode, Suspense } from 'react';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { App } from './App';
+import { createBrowserRouter, RouterProvider } from 'react-router';
+import { createQueryClient } from './lib/queries';
+import { routes } from './router';
 
-// Minimal path switch until the catalog slice adds a router. /design is lazy so it never weighs on the store.
-const DesignPage = lazy(() => import('./pages/DesignPage').then((m) => ({ default: m.DesignPage })));
-const isDesign = window.location.pathname.replace(/\/$/, '') === '/design';
+const queryClient = createQueryClient();
+const router = createBrowserRouter(routes);
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    {isDesign ? (
-      <Suspense fallback={null}>
-        <DesignPage />
-      </Suspense>
-    ) : (
-      <App />
-    )}
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
   </StrictMode>,
 );

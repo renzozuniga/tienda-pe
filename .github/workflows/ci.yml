@@ -61,13 +61,14 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
-      - name: Test
-        run: pnpm test
-
+      # Integration tests need the schema, so migrations run first.
       - name: Migrations apply on a clean database
         run: |
           pnpm --filter @tienda/api exec prisma migrate deploy
           pnpm db:seed
+
+      - name: Test
+        run: pnpm test
 
       - name: Build
         run: pnpm build

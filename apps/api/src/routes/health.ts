@@ -2,6 +2,7 @@ import type { Health } from '@tienda/contracts';
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import type { DbPinger } from '../db.js';
+import { contractMatches } from '../lib/contract.js';
 
 export const HealthSchema = z.strictObject({
   status: z.enum(['ok', 'degraded']),
@@ -9,10 +10,7 @@ export const HealthSchema = z.strictObject({
   uptimeSeconds: z.number().nonnegative(),
 });
 
-// Si el esquema Zod y openapi.yaml dejan de coincidir, `pnpm typecheck` falla aquí.
-type Equal<A, B> = (<T>() => T extends A ? 1 : 2) extends <T>() => T extends B ? 1 : 2 ? true : false;
-const _contractMatches: Equal<z.infer<typeof HealthSchema>, Health> = true;
-void _contractMatches;
+contractMatches<z.infer<typeof HealthSchema>, Health>(true);
 
 export const healthRoutes: FastifyPluginAsyncZod<{ db: DbPinger }> = async (app, { db }) => {
   app.get('/health', { schema: { response: { 200: HealthSchema, 503: HealthSchema } } }, async (_req, reply) => {

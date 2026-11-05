@@ -6,21 +6,29 @@ Fastify 5 + Zod 4 + Prisma 7 on PostgreSQL. Root CLAUDE.md conventions apply.
 
 ```bash
 pnpm --filter @tienda/api dev                                        # tsx watch on :3001, reads apps/api/.env
-pnpm --filter @tienda/api test                                       # vitest; no database needed
+pnpm --filter @tienda/api test                                       # vitest (route tests use fakes; *.int.test.ts uses Postgres)
 pnpm --filter @tienda/api exec prisma migrate dev --name <change>    # after editing prisma/schema.prisma
+pnpm --filter @tienda/api exec prisma generate                       # Prisma 7: migrate dev no longer generates
 pnpm db:seed                                                         # idempotent upserts from prisma/seed.ts
 ```
 
 ## How the app is wired
 
 - `src/app.ts` `buildApp(deps)` builds the app without listening; `src/server.ts` creates the real
-  dependencies (Prisma, env) and calls `listen`. Tests call `buildApp` with fakes and use `app.inject()`.
-- Each route is a Fastify plugin in `src/routes/` that receives its dependencies through plugin options, never
-  by importing Prisma directly. Follow `routes/health.ts`.
+  dependencies (Prisma, env) and calls `listen`. Tests use `buildTestApp` from `test/helpers.ts` (fakes for
+  every dependency) and `app.inject()`.
+- Each feature has a repository interface (`src/catalog/repo.ts`: `CatalogRepo` plus its Prisma implementation)
+  and a route plugin in `src/routes/` that receives the repository through plugin options. Routes never import
+  Prisma. Repositories `select` only the DTO fields and map rows to contract types.
+- Zod schemas live next to the feature (`src/catalog/schemas.ts`). Every schema that a response uses has a
+  `contractMatches<z.infer<…>, ContractType>(true)` line (`src/lib/contract.ts`), so drift fails typecheck.
 - Validation and serialization go through `fastify-type-provider-zod`: declare `schema.response` for every
-  status code. Returning a field outside the schema throws instead of leaking it.
-- Next to each response schema, keep the `Equal<z.infer<…>, ContractType>` assertion against the type from
-  `@tienda/contracts`.
+  status code, spreading `errorResponses`. Returning a field outside the schema answers 500 instead of leaking.
+- `src/lib/errors.ts` is the single error format `{ code, message, details? }`: validation errors become 400
+  `VALIDATION_ERROR` with Spanish messages (Zod's `es` locale), unknown routes 404, anything else 500
+  `INTERNAL_ERROR` without internal details.
+- Integration tests (`*.int.test.ts`) create their own uniquely named rows and delete them; they skip when
+  `DATABASE_URL` is not set. Test files run sequentially (`fileParallelism: false`).
 
 ## Prisma 7
 
