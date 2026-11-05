@@ -30,3 +30,14 @@ describe('GET /health', () => {
     expect(res.json()).toMatchObject({ status: 'degraded', db: 'down' });
   });
 });
+
+describe('CORS', () => {
+  it('only allows the configured origins', async () => {
+    const app = await buildApp({ db: { ping: async () => {} }, webOrigins: ['https://tienda.example'] });
+    const allowed = await app.inject({ method: 'GET', url: '/health', headers: { origin: 'https://tienda.example' } });
+    const denied = await app.inject({ method: 'GET', url: '/health', headers: { origin: 'https://otro.example' } });
+    expect(allowed.headers['access-control-allow-origin']).toBe('https://tienda.example');
+    expect(denied.headers['access-control-allow-origin']).toBeUndefined();
+    await app.close();
+  });
+});

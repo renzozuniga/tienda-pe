@@ -72,6 +72,25 @@ El contrato completo está en [`packages/contracts/openapi.yaml`](packages/contr
 Los precios se guardan como **enteros en céntimos** (`priceCents`) con moneda `PEN`, nunca como decimales.
 Para mostrarlos en la web usa `formatPEN(cents)` → `S/ 38.90`.
 
+## CI y deploy
+
+- **CI** (`.github/workflows/ci.yml`): en cada PR y en `main` corre instalación, tipos del contrato al día, lint,
+  formato, typecheck, tests, migraciones sobre un Postgres limpio, seed y build. El job `check` es obligatorio
+  para mergear. El job `audit` revisa vulnerabilidades y solo informa.
+- **Deploy** ([ADR-0005](docs/decisions/0005-hosting-render-y-neon.md)): la web y la API en Render, definidas en
+  `render.yaml`, y Postgres en Neon. Render despliega solo cuando el CI de `main` pasa.
+
+Primer despliegue (una sola vez):
+
+1. Crea un proyecto en [Neon](https://neon.com) en la región AWS us-east-1 y copia la cadena de conexión con pooling.
+2. En Render, **New → Blueprint** y elige este repo. Render lee `render.yaml` y pide las variables marcadas
+   `sync: false`:
+   - `tienda-pe-api` → `DATABASE_URL` (la de Neon) y `WEB_ORIGIN` (la URL de `tienda-pe-web`).
+   - `tienda-pe-web` → `VITE_API_URL` (la URL de `tienda-pe-api`).
+3. Cuando ambos servicios estén en verde, abre la web: debe decir **API: operativa · Base de datos: operativa**.
+
+En el plan gratuito la API se duerme tras 15 minutos sin tráfico: la primera visita después tarda cerca de un minuto.
+
 ## Problemas comunes
 
 - **`Cannot connect to the Docker daemon`**: abre Docker Desktop y vuelve a ejecutar `pnpm db:up`.
