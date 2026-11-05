@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router';
 import { Card, Price, Skeleton, StockBadge } from '../components';
 import { productQuery } from '../lib/queries';
+import { AddToCartButton } from '../cart/AddToCartButton';
 import s from './catalog.module.css';
 
 export function ProductCard({ product }: { product: ProductSummary }) {
@@ -23,6 +24,9 @@ export function ProductCard({ product }: { product: ProductSummary }) {
       <StockBadge stock={product.stock} />
       <div className={s.foot}>
         <Price cents={product.priceCents} taxNote />
+        <div className={s.cardAction}>
+          <AddToCartButton slug={product.slug} name={product.name} stock={product.stock} size="sm" />
+        </div>
       </div>
     </Card>
   );

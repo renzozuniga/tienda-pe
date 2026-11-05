@@ -1,5 +1,16 @@
 import { useState } from 'react';
-import { Badge, Button, Card, EmptyState, Input, Price, Select, Skeleton, StockBadge } from '../components';
+import {
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  Input,
+  Price,
+  QuantityStepper,
+  Select,
+  Skeleton,
+  StockBadge,
+} from '../components';
 import l from '../layout.module.css';
 import s from './DesignPage.module.css';
 
@@ -46,6 +57,7 @@ function setTheme(theme: Theme) {
 export function DesignPage() {
   const [theme, setThemeState] = useState<Theme>('system');
   const [loading, setLoading] = useState(false);
+  const [qty, setQty] = useState(2);
 
   const pickTheme = (t: Theme) => {
     setTheme(t);
@@ -146,6 +158,16 @@ export function DesignPage() {
             <option value="070101">Callao</option>
           </Select>
           <Input label="Referencia" disabled placeholder="No disponible" />
+        </div>
+      </section>
+
+      <section className={l.stack} aria-labelledby="cantidad">
+        <h2 id="cantidad" className={l.sectionTitle}>
+          QuantityStepper
+        </h2>
+        <div className={l.row}>
+          <QuantityStepper label="Café de Chanchamayo 500 g" value={qty} max={5} onChange={setQty} />
+          <QuantityStepper label="Producto deshabilitado" value={1} max={1} onChange={() => {}} disabled />
         </div>
       </section>
 

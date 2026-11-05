@@ -34,6 +34,16 @@
 .tagline {
   font-size: var(--text-sm);
   color: var(--color-text-muted);
+  /* Phones: brand and cart on one row, the tagline below. */
+  order: 3;
+  flex-basis: 100%;
+}
+@media (min-width: 40rem) {
+  .tagline {
+    order: 0;
+    flex: 1 1 auto;
+    flex-basis: auto;
+  }
 }
 .footer {
   border-top: var(--border-width) solid var(--color-border);

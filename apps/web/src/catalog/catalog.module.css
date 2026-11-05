@@ -75,6 +75,11 @@
 .name a:focus-visible {
   outline: none;
 }
+.cardAction {
+  /* Above the stretched product link, so the button stays clickable. */
+  position: relative;
+  z-index: 1;
+}
 .meta {
   font-size: var(--text-sm);
   color: var(--color-text-muted);

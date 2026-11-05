@@ -7,6 +7,8 @@ export type CatalogRepo = {
   listCategories(): Promise<Category[]>;
   listProducts(input: ListProductsInput): Promise<ProductPage>;
   getProduct(slug: string): Promise<ProductDetail | null>;
+  /** Active products among the given slugs, in no particular order. Unknown or inactive slugs are left out. */
+  getProductsBySlugs(slugs: string[]): Promise<ProductSummary[]>;
 };
 
 const summarySelect = {
@@ -65,6 +67,15 @@ export function prismaCatalogRepo(prisma: PrismaClient): CatalogRepo {
         select: { ...summarySelect, description: true },
       });
       return row ? { ...toSummary(row), description: row.description } : null;
+    },
+
+    async getProductsBySlugs(slugs) {
+      if (slugs.length === 0) return [];
+      const rows = await prisma.product.findMany({
+        where: { slug: { in: slugs }, active: true },
+        select: summarySelect,
+      });
+      return rows.map(toSummary);
     },
   };
 }

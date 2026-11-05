@@ -4,6 +4,7 @@ export { Card, type CardProps } from './Card';
 export { EmptyState, type EmptyStateProps } from './EmptyState';
 export { Input, type InputProps } from './Input';
 export { Price, type PriceProps } from './Price';
+export { QuantityStepper, type QuantityStepperProps } from './QuantityStepper';
 export { Select, type SelectProps } from './Select';
 export { Skeleton, type SkeletonProps } from './Skeleton';
 export { StockBadge } from './StockBadge';

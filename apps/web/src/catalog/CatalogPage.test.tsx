@@ -31,6 +31,7 @@ describe('CatalogPage', () => {
     expect(within(card).getByText('40 en stock')).toBeInTheDocument();
     expect(screen.getByText('Quedan 3')).toBeInTheDocument();
     expect(screen.getByText('2 productos')).toBeInTheDocument();
+    expect(within(card).getByRole('button', { name: 'Agregar al carrito Café de Chanchamayo 500 g' })).toBeEnabled();
   });
 
   it('filters by the category in the URL and marks it as current', async () => {

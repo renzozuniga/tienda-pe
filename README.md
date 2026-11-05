@@ -61,12 +61,13 @@ También puedes probar la API directamente con `curl http://localhost:3001/healt
 
 ## API
 
-| Método | Ruta              | Respuesta                                                                                        |
-| ------ | ----------------- | ------------------------------------------------------------------------------------------------ |
-| `GET`  | `/health`         | `200 { status: "ok", db: "ok", … }`, o `503` con `degraded` / `down` si Postgres no responde     |
-| `GET`  | `/categories`     | `{ items: [{ slug, name }] }`: solo categorías con productos activos, en orden de vitrina        |
-| `GET`  | `/products`       | `{ items, nextCursor }`. Parámetros: `category` (slug), `cursor`, `limit` (1–50, 12 por defecto) |
-| `GET`  | `/products/:slug` | Detalle con `description`, o `404 NOT_FOUND` si no existe o no está activo                       |
+| Método | Ruta              | Respuesta                                                                                             |
+| ------ | ----------------- | ----------------------------------------------------------------------------------------------------- |
+| `GET`  | `/health`         | `200 { status: "ok", db: "ok", … }`, o `503` con `degraded` / `down` si Postgres no responde          |
+| `GET`  | `/categories`     | `{ items: [{ slug, name }] }`: solo categorías con productos activos, en orden de vitrina             |
+| `GET`  | `/products`       | `{ items, nextCursor }`. Parámetros: `category` (slug), `cursor`, `limit` (1–50, 12 por defecto)      |
+| `GET`  | `/products/:slug` | Detalle con `description`, o `404 NOT_FOUND` si no existe o no está activo                            |
+| `POST` | `/cart/quote`     | Precios y stock actuales para `{ items: [{ slug, quantity }] }`: líneas ajustadas al stock y subtotal |
 
 Todos los errores tienen la forma `{ code, message, details? }` con `code` en `VALIDATION_ERROR`, `NOT_FOUND`,
 `RATE_LIMITED` o `INTERNAL_ERROR` y mensajes en español. Cada IP puede hacer 120 solicitudes por minuto
@@ -75,7 +76,8 @@ con gzip o brotli desde 1 KB. El contrato completo está en
 [`packages/contracts/openapi.yaml`](packages/contracts/openapi.yaml).
 
 En la web, las URLs que ve el comprador están en español: `/` (catálogo, con `?categoria=<slug>`),
-`/productos/<slug>`, `/estado` y `/design`.
+`/productos/<slug>`, `/carrito`, `/estado` y `/design`. El carrito vive en el navegador (`localStorage`) y
+solo guarda slug y cantidad; los precios siempre los calcula la API.
 
 ## Dinero
 

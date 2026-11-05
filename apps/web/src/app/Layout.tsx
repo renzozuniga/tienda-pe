@@ -1,4 +1,5 @@
 import { Link, Outlet, ScrollRestoration } from 'react-router';
+import { CartLink } from '../cart/CartLink';
 import s from './Layout.module.css';
 
 export function Layout() {
@@ -13,6 +14,7 @@ export function Layout() {
             Tienda PE
           </Link>
           <span className={s.tagline}>Productos peruanos · precios en soles con IGV</span>
+          <CartLink />
         </div>
       </header>
       <div id="contenido">

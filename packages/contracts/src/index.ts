@@ -15,3 +15,6 @@ export type ProductSummary = Schemas['ProductSummary'];
 export type ProductDetail = Simplify<Schemas['ProductDetail']>;
 export type ProductPage = Schemas['ProductPage'];
 export type ListProductsQuery = NonNullable<paths['/products']['get']['parameters']['query']>;
+export type CartQuoteRequest = Schemas['CartQuoteRequest'];
+export type CartLine = Schemas['CartLine'];
+export type CartQuote = Schemas['CartQuote'];

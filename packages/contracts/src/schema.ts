@@ -72,6 +72,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/cart/quote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cotiza un carrito con los precios y el stock actuales
+         * @description El navegador solo guarda slug y cantidad. Esta operación devuelve los precios vigentes, ajusta cada
+         *     línea al stock disponible e informa qué productos ya no están a la venta. No reserva stock.
+         */
+        post: operations["quoteCart"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -120,6 +141,37 @@ export interface components {
             items: components["schemas"]["ProductSummary"][];
             /** @description Cursor para pedir la siguiente página; null si no hay más */
             nextCursor: string | null;
+        };
+        CartQuoteRequest: {
+            items: {
+                slug: string;
+                quantity: number;
+            }[];
+        };
+        CartLine: {
+            product: components["schemas"]["ProductSummary"];
+            /** @description Cantidad que pidió el comprador (si un slug se repite, se suman) */
+            requestedQuantity: number;
+            /** @description Cantidad que se puede vender ahora, limitada por el stock */
+            quantity: number;
+            /** @description priceCents × quantity, en céntimos con IGV incluido */
+            lineTotalCents: number;
+            /**
+             * @description ok si alcanza el stock, limited si se ajustó la cantidad, sold_out si no hay stock
+             * @enum {string}
+             */
+            status: "ok" | "limited" | "sold_out";
+        };
+        CartQuote: {
+            lines: components["schemas"]["CartLine"][];
+            /** @description Slugs que no existen o ya no están a la venta */
+            unavailable: string[];
+            /** @description Suma de quantity de todas las líneas */
+            itemCount: number;
+            /** @description Suma de lineTotalCents, con IGV incluido y sin envío */
+            subtotalCents: number;
+            /** @enum {string} */
+            currency: "PEN";
         };
     };
     responses: {
@@ -270,6 +322,33 @@ export interface operations {
             };
             400: components["responses"]["ValidationError"];
             404: components["responses"]["NotFound"];
+            429: components["responses"]["RateLimited"];
+            500: components["responses"]["InternalError"];
+        };
+    };
+    quoteCart: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CartQuoteRequest"];
+            };
+        };
+        responses: {
+            /** @description Cotización del carrito */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CartQuote"];
+                };
+            };
+            400: components["responses"]["ValidationError"];
             429: components["responses"]["RateLimited"];
             500: components["responses"]["InternalError"];
         };

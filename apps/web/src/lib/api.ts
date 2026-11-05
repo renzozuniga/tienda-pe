@@ -1,5 +1,7 @@
 import type {
   ApiError as ApiErrorBody,
+  CartQuote,
+  CartQuoteRequest,
   CategoryList,
   Health,
   ListProductsQuery,
@@ -29,19 +31,26 @@ export class ApiError extends Error {
 }
 
 type RequestOptions = {
+  method?: 'GET' | 'POST';
+  body?: unknown;
   signal?: AbortSignal;
   query?: Record<string, string | number | undefined>;
   okStatuses?: number[];
 };
 
-async function request<T>(path: string, { signal, query, okStatuses = [200] }: RequestOptions = {}): Promise<T> {
+async function request<T>(
+  path: string,
+  { method = 'GET', body, signal, query, okStatuses = [200] }: RequestOptions = {},
+): Promise<T> {
   const params = new URLSearchParams();
   for (const [key, value] of Object.entries(query ?? {})) if (value !== undefined) params.set(key, String(value));
   const url = `${BASE_URL}${path}${params.size ? `?${params}` : ''}`;
+  const headers: Record<string, string> = { Accept: 'application/json' };
+  if (body !== undefined) headers['Content-Type'] = 'application/json';
 
   let res: Response;
   try {
-    res = await fetch(url, { signal, headers: { Accept: 'application/json' } });
+    res = await fetch(url, { method, signal, headers, body: body === undefined ? undefined : JSON.stringify(body) });
   } catch (err) {
     if (signal?.aborted) throw err;
     throw new ApiError(0, { code: 'NETWORK_ERROR' });
@@ -49,11 +58,11 @@ async function request<T>(path: string, { signal, query, okStatuses = [200] }: R
 
   if (okStatuses.includes(res.status)) return (await res.json()) as T;
 
-  const body = (await res.json().catch(() => null)) as Partial<ApiErrorBody> | null;
+  const errorBody = (await res.json().catch(() => null)) as Partial<ApiErrorBody> | null;
   throw new ApiError(res.status, {
-    code: body?.code ?? 'INTERNAL_ERROR',
-    message: body?.message ?? 'Ocurrió un error inesperado. Inténtalo de nuevo en unos minutos.',
-    details: body?.details,
+    code: errorBody?.code ?? 'INTERNAL_ERROR',
+    message: errorBody?.message ?? 'Ocurrió un error inesperado. Inténtalo de nuevo en unos minutos.',
+    details: errorBody?.details,
   });
 }
 
@@ -67,3 +76,7 @@ export const listProducts = (query: ListProductsQuery, signal?: AbortSignal) =>
 
 export const getProduct = (slug: string, signal?: AbortSignal) =>
   request<ProductDetail>(`/products/${encodeURIComponent(slug)}`, { signal });
+
+/** Prices the cart with current prices and stock. Sends only slug and quantity. */
+export const quoteCart = (items: CartQuoteRequest['items'], signal?: AbortSignal) =>
+  request<CartQuote>('/cart/quote', { method: 'POST', body: { items }, signal });
