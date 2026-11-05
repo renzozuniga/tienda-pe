@@ -30,6 +30,12 @@ También puedes probar la API directamente con `curl http://localhost:3001/healt
 > Postgres corre en el puerto **5433** del host, para no chocar con un Postgres local en el 5432.
 > Para cambiarlo, define `POSTGRES_PORT` al levantar Docker y ajusta `DATABASE_URL` en `apps/api/.env`.
 
+## Documentación
+
+- [`docs/spec.md`](docs/spec.md): problema, usuarios, alcance del MVP y lo que queda fuera.
+- [`docs/glossary.md`](docs/glossary.md): términos del dominio (IGV, ubigeo, boleta…) y su nombre en el código.
+- [`docs/decisions/`](docs/decisions/): decisiones de arquitectura (ADRs).
+
 ## Comandos
 
 | Comando | Qué hace |
