@@ -8,18 +8,40 @@ datasource db {
   provider = "postgresql"
 }
 
-/// Producto del catálogo. El precio se guarda en céntimos de sol (PEN) para evitar errores de redondeo.
+/// Categoría del catálogo. sortOrder define el orden en que se muestran.
+model Category {
+  id        String    @id @default(cuid())
+  slug      String    @unique
+  name      String
+  sortOrder Int       @default(0)
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("categories")
+}
+
+/// Producto del catálogo. El precio se guarda en céntimos de sol (PEN), con IGV incluido (ADR-0002).
+/// La base de datos exige priceCents >= 0 y stock >= 0 con CHECK constraints (ver la migración add_categories).
 model Product {
   id          String   @id @default(cuid())
   slug        String   @unique
   name        String
   description String?
+  /// Lugar de origen: departamento o provincia (por ejemplo "Junín").
+  origin      String?
   priceCents  Int
   currency    String   @default("PEN") @db.Char(3)
   stock       Int      @default(0)
   active      Boolean  @default(true)
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  /// Catálogo completo: WHERE active ORDER BY name, id
+  @@index([active, name, id])
+  /// Catálogo por categoría: WHERE categoryId AND active ORDER BY name, id
+  @@index([categoryId, active, name, id])
   @@map("products")
 }

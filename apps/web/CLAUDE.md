@@ -10,10 +10,23 @@ pnpm --filter @tienda/web test         # vitest run
 pnpm --filter @tienda/web build        # tsc --noEmit + vite build
 ```
 
+## Structure
+
+- `src/router.tsx` holds the routes (React Router 8). Buyer-facing paths are in Spanish (`/productos/:slug`,
+  `/estado`, `?categoria=`). Store pages render inside `app/Layout.tsx`; `/design` is lazy and outside it.
+- Features live in folders (`src/catalog/`, `src/status/`) with their pages, composite components and a CSS
+  Module. Base components stay in `src/components/`.
+- Every page sets its tab title with `useDocumentTitle`.
+
 ## How the app talks to the API
 
 - All requests go through `src/lib/api.ts` using types from `@tienda/contracts`. Don't call `fetch` from
-  components.
+  components. Failures throw `ApiError` with the contract's `code` and Spanish `message` (`NETWORK_ERROR`
+  when the request never reached the API).
+- Server state lives in TanStack Query. Query definitions are in `src/lib/queries.ts` (`staleTime` 60 s, no
+  retry on 4xx); components call `useQuery(productQuery(slug))` and so on, never ad hoc keys.
+- Tests render real routes with `renderRoute(path)` and stub the API with `mockApi({...})` from
+  `src/test-utils.tsx`.
 - The client calls `/api/*`. In dev, Vite strips the prefix and proxies to the API (`vite.config.ts`). In other
   environments, set `VITE_API_URL`.
 - Some endpoints return a useful body with a non-2xx status (`/health` returns 503 with `degraded`). Handle the

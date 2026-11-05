@@ -21,6 +21,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Categorías del catálogo, en el orden en que se muestran */
+        get: operations["listCategories"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Productos activos, ordenados por nombre, con paginación por cursor */
+        get: operations["listProducts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/products/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Detalle de un producto activo */
+        get: operations["getProduct"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -32,8 +83,74 @@ export interface components {
             db: "ok" | "down";
             uptimeSeconds: number;
         };
+        Error: {
+            /** @enum {string} */
+            code: "VALIDATION_ERROR" | "NOT_FOUND" | "INTERNAL_ERROR";
+            /** @description Mensaje en español para mostrar al usuario */
+            message: string;
+            /** @description Campos con problemas, solo en VALIDATION_ERROR */
+            details?: {
+                field: string;
+                message: string;
+            }[];
+        };
+        Category: {
+            slug: string;
+            name: string;
+        };
+        CategoryList: {
+            items: components["schemas"]["Category"][];
+        };
+        ProductSummary: {
+            slug: string;
+            name: string;
+            /** @description Lugar de origen (departamento o provincia) */
+            origin: string | null;
+            /** @description Precio de venta en céntimos, con IGV incluido */
+            priceCents: number;
+            /** @enum {string} */
+            currency: "PEN";
+            stock: number;
+            category: components["schemas"]["Category"];
+        };
+        ProductDetail: components["schemas"]["ProductSummary"] & {
+            description: string | null;
+        };
+        ProductPage: {
+            items: components["schemas"]["ProductSummary"][];
+            /** @description Cursor para pedir la siguiente página; null si no hay más */
+            nextCursor: string | null;
+        };
     };
-    responses: never;
+    responses: {
+        /** @description Parámetros inválidos */
+        ValidationError: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["Error"];
+            };
+        };
+        /** @description El recurso no existe */
+        NotFound: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["Error"];
+            };
+        };
+        /** @description Error inesperado del servidor */
+        InternalError: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["Error"];
+            };
+        };
+    };
     parameters: never;
     requestBodies: never;
     headers: never;
@@ -68,6 +185,81 @@ export interface operations {
                     "application/json": components["schemas"]["Health"];
                 };
             };
+        };
+    };
+    listCategories: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Lista de categorías */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryList"];
+                };
+            };
+            500: components["responses"]["InternalError"];
+        };
+    };
+    listProducts: {
+        parameters: {
+            query?: {
+                /** @description Slug de la categoría para filtrar */
+                category?: string;
+                /** @description Valor de nextCursor de la página anterior */
+                cursor?: string;
+                /** @description Productos por página */
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Una página de productos */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductPage"];
+                };
+            };
+            400: components["responses"]["ValidationError"];
+            500: components["responses"]["InternalError"];
+        };
+    };
+    getProduct: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description El producto */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductDetail"];
+                };
+            };
+            400: components["responses"]["ValidationError"];
+            404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalError"];
         };
     };
 }

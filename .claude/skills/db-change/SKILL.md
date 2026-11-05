@@ -12,11 +12,14 @@ Never change the database by hand and never edit a migration that is already in 
 2. **Edit `schema.prisma`.** Names in English, `camelCase` fields mapped to `snake_case` with `@map` /
    `@@map`. Money as `Int` in céntimos (`*Cents`, ADR-0002). Timestamps `createdAt`/`updatedAt`.
 3. **Create the migration.**
-   `pnpm --filter @tienda/api exec prisma migrate dev --name <verb_object>` (for example `add_categories`).
+   `pnpm --filter @tienda/api exec prisma migrate dev --create-only --name <verb_object>` (for example
+   `add_categories`), review and edit the SQL, then `prisma migrate dev` to apply it and `prisma generate`
+   (Prisma 7 does not regenerate the client on migrate). If existing rows would break a new required column,
+   backfill them in the same migration (see `20261105054812_add_categories`).
 4. **Business rules as constraints.** Prisma can't declare `CHECK`; add them by editing the new
    `migration.sql` before it is applied anywhere else, for example
    `ALTER TABLE "products" ADD CONSTRAINT "products_price_cents_check" CHECK ("priceCents" >= 0);`.
-   Required: money ≥ 0 and stock ≥ 0. Then run `prisma migrate reset` locally to replay it.
+   Required: money ≥ 0 and stock ≥ 0. Write them before the migration is applied anywhere.
 5. **Seed.** Update `apps/api/prisma/seed.ts` so `pnpm db:seed` stays idempotent (upserts by natural key).
 6. **Verify.** `pnpm db:migrate` on a clean database, `pnpm db:seed` twice, `pnpm typecheck`,
    `pnpm --filter @tienda/api test`.

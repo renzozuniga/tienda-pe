@@ -1,10 +1,11 @@
 openapi: 3.1.0
 info:
   title: Tienda PE API
-  version: 0.1.0
+  version: 0.2.0
   description: |
     API de la tienda. Fuente de verdad del contrato entre apps/api y apps/web.
-    Los montos de dinero se expresan en céntimos (entero) y en soles (PEN).
+    Los montos de dinero se expresan en céntimos (entero) y en soles (PEN), con IGV incluido.
+    Los errores usan siempre el esquema Error.
 servers:
   - url: http://localhost:3001
 paths:
@@ -23,7 +24,82 @@ paths:
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Health' }
+
+  /categories:
+    get:
+      operationId: listCategories
+      summary: Categorías del catálogo, en el orden en que se muestran
+      responses:
+        '200':
+          description: Lista de categorías
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CategoryList' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /products:
+    get:
+      operationId: listProducts
+      summary: Productos activos, ordenados por nombre, con paginación por cursor
+      parameters:
+        - name: category
+          in: query
+          description: Slug de la categoría para filtrar
+          schema: { type: string, pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$', maxLength: 80 }
+        - name: cursor
+          in: query
+          description: Valor de nextCursor de la página anterior
+          schema: { type: string, minLength: 1, maxLength: 64 }
+        - name: limit
+          in: query
+          description: Productos por página
+          schema: { type: integer, minimum: 1, maximum: 50, default: 12 }
+      responses:
+        '200':
+          description: Una página de productos
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProductPage' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /products/{slug}:
+    get:
+      operationId: getProduct
+      summary: Detalle de un producto activo
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string, pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$', maxLength: 120 }
+      responses:
+        '200':
+          description: El producto
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProductDetail' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
 components:
+  responses:
+    ValidationError:
+      description: Parámetros inválidos
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: El recurso no existe
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    InternalError:
+      description: Error inesperado del servidor
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+
   schemas:
     Health:
       type: object
@@ -39,3 +115,84 @@ components:
         uptimeSeconds:
           type: number
           minimum: 0
+
+    Error:
+      type: object
+      additionalProperties: false
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          enum: [VALIDATION_ERROR, NOT_FOUND, INTERNAL_ERROR]
+        message:
+          type: string
+          description: Mensaje en español para mostrar al usuario
+        details:
+          type: array
+          description: Campos con problemas, solo en VALIDATION_ERROR
+          items:
+            type: object
+            additionalProperties: false
+            required: [field, message]
+            properties:
+              field: { type: string }
+              message: { type: string }
+
+    Category:
+      type: object
+      additionalProperties: false
+      required: [slug, name]
+      properties:
+        slug: { type: string }
+        name: { type: string }
+
+    CategoryList:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/Category' }
+
+    ProductSummary:
+      type: object
+      additionalProperties: false
+      required: [slug, name, origin, priceCents, currency, stock, category]
+      properties:
+        slug: { type: string }
+        name: { type: string }
+        origin:
+          type: [string, 'null']
+          description: Lugar de origen (departamento o provincia)
+        priceCents:
+          type: integer
+          minimum: 0
+          description: Precio de venta en céntimos, con IGV incluido
+        currency:
+          type: string
+          enum: [PEN]
+        stock:
+          type: integer
+          minimum: 0
+        category: { $ref: '#/components/schemas/Category' }
+
+    ProductDetail:
+      allOf:
+        - $ref: '#/components/schemas/ProductSummary'
+        - type: object
+          required: [description]
+          properties:
+            description: { type: [string, 'null'] }
+
+    ProductPage:
+      type: object
+      additionalProperties: false
+      required: [items, nextCursor]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/ProductSummary' }
+        nextCursor:
+          type: [string, 'null']
+          description: Cursor para pedir la siguiente página; null si no hay más
