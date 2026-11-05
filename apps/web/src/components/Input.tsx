@@ -1,6 +1,7 @@
 import type { InputHTMLAttributes } from 'react';
 import { cx } from '../lib/cx';
-import { Field, fieldStyles } from './Field';
+import { Field } from './Field';
+import fieldStyles from './Field.module.css';
 
 export type InputProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'id'> & {
   label: string;
