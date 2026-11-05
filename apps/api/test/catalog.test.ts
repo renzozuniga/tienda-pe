@@ -41,6 +41,14 @@ describe('GET /products', () => {
     expect(res.body).not.toContain('2100');
   });
 
+  it('treats an empty limit as not set', async () => {
+    const listProducts = vi.fn(async () => ({ items: [], nextCursor: null }));
+    app = await buildTestApp({ catalog: fakeCatalog({ listProducts }) });
+    const res = await app.inject({ url: '/products?limit=' });
+    expect(res.statusCode).toBe(200);
+    expect(listProducts).toHaveBeenCalledWith({ limit: 12 });
+  });
+
   it('passes category, cursor and limit to the repository', async () => {
     const listProducts = vi.fn(async () => ({ items: [], nextCursor: null }));
     app = await buildTestApp({ catalog: fakeCatalog({ listProducts }) });

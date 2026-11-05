@@ -5,14 +5,19 @@ import { z } from 'zod';
 import { contractMatches } from './contract.js';
 
 export const ApiErrorSchema = z.strictObject({
-  code: z.enum(['VALIDATION_ERROR', 'NOT_FOUND', 'INTERNAL_ERROR']),
+  code: z.enum(['VALIDATION_ERROR', 'NOT_FOUND', 'RATE_LIMITED', 'INTERNAL_ERROR']),
   message: z.string(),
   details: z.array(z.strictObject({ field: z.string(), message: z.string() })).optional(),
 });
 contractMatches<z.infer<typeof ApiErrorSchema>, ApiError>(true);
 
 /** Error responses every route declares, so they are serialized with the contract's Error schema. */
-export const errorResponses = { 400: ApiErrorSchema, 404: ApiErrorSchema, 500: ApiErrorSchema } as const;
+export const errorResponses = {
+  400: ApiErrorSchema,
+  404: ApiErrorSchema,
+  429: ApiErrorSchema,
+  500: ApiErrorSchema,
+} as const;
 
 export function notFound(message = 'No encontramos lo que buscas.'): ApiError {
   return { code: 'NOT_FOUND', message };
@@ -32,6 +37,12 @@ export function registerErrorHandling(app: FastifyInstance) {
 
     const status = typeof err.statusCode === 'number' ? err.statusCode : 500;
     if (status === 404) return reply.code(404).send(notFound());
+    if (status === 429) {
+      return reply.code(429).send({
+        code: 'RATE_LIMITED',
+        message: 'Hiciste demasiadas solicitudes. Espera un minuto y vuelve a intentarlo.',
+      });
+    }
     if (status >= 400 && status < 500) {
       return reply.code(400).send({ code: 'VALIDATION_ERROR', message: 'La solicitud no es válida.' });
     }

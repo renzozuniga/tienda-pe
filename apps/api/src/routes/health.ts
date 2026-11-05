@@ -19,7 +19,7 @@ export const healthRoutes: FastifyPluginAsyncZod<{ db: DbPinger }> = async (app,
       await db.ping();
       return { status: 'ok', db: 'ok', uptimeSeconds } as const;
     } catch (err) {
-      app.log.warn({ err }, 'La base de datos no responde');
+      app.log.warn({ err }, 'Database ping failed');
       return reply.code(503).send({ status: 'degraded', db: 'down', uptimeSeconds });
     }
   });

@@ -1,11 +1,12 @@
 openapi: 3.1.0
 info:
   title: Tienda PE API
-  version: 0.2.0
+  version: 0.3.0
   description: |
     API de la tienda. Fuente de verdad del contrato entre apps/api y apps/web.
     Los montos de dinero se expresan en céntimos (entero) y en soles (PEN), con IGV incluido.
-    Los errores usan siempre el esquema Error.
+    Los errores usan siempre el esquema Error. Cada IP tiene un límite de solicitudes por minuto;
+    al superarlo la API responde 429 con code RATE_LIMITED y el header retry-after.
 servers:
   - url: http://localhost:3001
 paths:
@@ -35,6 +36,7 @@ paths:
           content:
             application/json:
               schema: { $ref: '#/components/schemas/CategoryList' }
+        '429': { $ref: '#/components/responses/RateLimited' }
         '500': { $ref: '#/components/responses/InternalError' }
 
   /products:
@@ -61,6 +63,7 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/ProductPage' }
         '400': { $ref: '#/components/responses/ValidationError' }
+        '429': { $ref: '#/components/responses/RateLimited' }
         '500': { $ref: '#/components/responses/InternalError' }
 
   /products/{slug}:
@@ -80,6 +83,7 @@ paths:
               schema: { $ref: '#/components/schemas/ProductDetail' }
         '400': { $ref: '#/components/responses/ValidationError' }
         '404': { $ref: '#/components/responses/NotFound' }
+        '429': { $ref: '#/components/responses/RateLimited' }
         '500': { $ref: '#/components/responses/InternalError' }
 
 components:
@@ -91,6 +95,11 @@ components:
           schema: { $ref: '#/components/schemas/Error' }
     NotFound:
       description: El recurso no existe
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    RateLimited:
+      description: Demasiadas solicitudes desde la misma IP; reintentar después de retry-after segundos
       content:
         application/json:
           schema: { $ref: '#/components/schemas/Error' }
@@ -123,7 +132,7 @@ components:
       properties:
         code:
           type: string
-          enum: [VALIDATION_ERROR, NOT_FOUND, INTERNAL_ERROR]
+          enum: [VALIDATION_ERROR, NOT_FOUND, RATE_LIMITED, INTERNAL_ERROR]
         message:
           type: string
           description: Mensaje en español para mostrar al usuario

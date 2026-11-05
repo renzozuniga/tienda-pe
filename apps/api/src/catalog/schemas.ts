@@ -31,7 +31,8 @@ export const ProductPageSchema = z.strictObject({
 export const ListProductsQuerySchema = z.object({
   category: z.string().max(80).regex(SLUG, 'Usa un slug de categoría válido').optional(),
   cursor: z.string().min(1).max(64).optional(),
-  limit: z.coerce.number().int().min(1).max(50).default(12),
+  // An empty value (?limit=) means "not set", not 0.
+  limit: z.preprocess((v) => (v === '' ? undefined : v), z.coerce.number().int().min(1).max(50).default(12)),
 });
 
 export const ProductParamsSchema = z.object({

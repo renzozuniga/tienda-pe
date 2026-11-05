@@ -2,8 +2,9 @@ import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { Link, useSearchParams } from 'react-router';
 import { useDocumentTitle } from '../app/useDocumentTitle';
 import { Button, EmptyState } from '../components';
+import { ApiError } from '../lib/api';
 import l from '../layout.module.css';
-import { categoriesQuery, PAGE_SIZE, productsQuery } from '../lib/queries';
+import { categoriesQuery, productsQuery } from '../lib/queries';
 import s from './catalog.module.css';
 import { ProductCard, ProductCardSkeleton } from './ProductCard';
 
@@ -65,6 +66,12 @@ export function CatalogPage() {
               ))}
             </ul>
           </div>
+        ) : products.isError && products.error instanceof ApiError && products.error.code === 'VALIDATION_ERROR' ? (
+          <EmptyState
+            title="Esa categoría no existe"
+            description="Revisa el enlace o elige una categoría de la lista."
+            action={<Link to="/">Ver todo el catálogo</Link>}
+          />
         ) : products.isError ? (
           <EmptyState
             tone="danger"
@@ -91,8 +98,9 @@ export function CatalogPage() {
             </ul>
             <div className={s.more}>
               <span aria-live="polite">
-                {items.length} {items.length === 1 ? 'producto' : 'productos'}
-                {products.hasNextPage ? ` · mostrando de ${PAGE_SIZE} en ${PAGE_SIZE}` : ''}
+                {products.hasNextPage
+                  ? `Mostrando los primeros ${items.length} productos`
+                  : `${items.length} ${items.length === 1 ? 'producto' : 'productos'}`}
               </span>
               {products.hasNextPage && (
                 <Button

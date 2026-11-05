@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /design
+Disallow: /estado

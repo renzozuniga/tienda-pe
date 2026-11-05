@@ -68,8 +68,10 @@ También puedes probar la API directamente con `curl http://localhost:3001/healt
 | `GET`  | `/products`       | `{ items, nextCursor }`. Parámetros: `category` (slug), `cursor`, `limit` (1–50, 12 por defecto) |
 | `GET`  | `/products/:slug` | Detalle con `description`, o `404 NOT_FOUND` si no existe o no está activo                       |
 
-Todos los errores tienen la forma `{ code, message, details? }` con `code` en `VALIDATION_ERROR`, `NOT_FOUND` o
-`INTERNAL_ERROR` y mensajes en español. El contrato completo está en
+Todos los errores tienen la forma `{ code, message, details? }` con `code` en `VALIDATION_ERROR`, `NOT_FOUND`,
+`RATE_LIMITED` o `INTERNAL_ERROR` y mensajes en español. Cada IP puede hacer 120 solicitudes por minuto
+(`RATE_LIMIT_PER_MINUTE`; `/health` no cuenta). Las respuestas llevan headers de seguridad (helmet) y se comprimen
+con gzip o brotli desde 1 KB. El contrato completo está en
 [`packages/contracts/openapi.yaml`](packages/contracts/openapi.yaml).
 
 En la web, las URLs que ve el comprador están en español: `/` (catálogo, con `?categoria=<slug>`),
