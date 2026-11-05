@@ -1,0 +1,204 @@
+/*
+ * MAO Systems design tokens for tienda-pe.
+ *
+ * Two layers:
+ *   1. Raw palette (--mao-*): MAO Systems values, unchanged. Only this file may reference them.
+ *   2. Semantic tokens (--color-*, --font-*, --space-*, --radius-*, …): the only tokens components use.
+ *      Switching theme or brand means changing this layer, never the components.
+ *
+ * Light is the default. Dark applies when the OS prefers it (unless data-theme="light")
+ * or when data-theme="dark" is set on <html>.
+ */
+
+:root {
+  /* ── 1. Raw palette · MAO Systems ─────────────────────────────── */
+  --mao-forest-50: #ecf3ef;
+  --mao-forest-100: #d2e2d9;
+  --mao-forest-200: #a8c7b7;
+  --mao-forest-300: #7bb89e;
+  --mao-forest-400: #4e9b7e;
+  --mao-forest-500: #2e7d5f;
+  --mao-forest-600: #186a4d;
+  --mao-forest-700: #0f3d2e;
+  --mao-forest-800: #082a20;
+  --mao-forest-900: #051a14;
+
+  --mao-parchment: #f7f5ef;
+  --mao-paper: #ffffff;
+  --mao-fog: #edeae2;
+  --mao-bone: #e2ded3;
+  --mao-stone-100: #d6d2c7;
+  --mao-stone-200: #b4b0a6;
+  --mao-stone-300: #8b877e;
+  --mao-stone-400: #5f5c55;
+  --mao-stone-500: #3a3833;
+  --mao-stone-600: #26241f;
+  --mao-stone-700: #15140f;
+
+  --mao-success: #2e7d5f;
+  --mao-success-soft: #ddebe3;
+  --mao-warning: #b86e1a;
+  --mao-warning-soft: #f2e4cc;
+  --mao-danger: #a23a2e;
+  --mao-danger-soft: #f1d9d5;
+  --mao-info: #2c5780;
+  --mao-info-soft: #d9e2ec;
+
+  /* ── 2. Semantic tokens ────────────────────────────────────────── */
+  /* surfaces */
+  --color-bg: var(--mao-parchment);
+  --color-surface: var(--mao-paper);
+  --color-surface-alt: var(--mao-fog);
+  --color-border: var(--mao-bone);
+  --color-border-strong: var(--mao-stone-100);
+  --color-overlay: rgb(15 23 20 / 0.55);
+
+  /* text */
+  --color-text: var(--mao-stone-700);
+  --color-text-secondary: var(--mao-stone-500);
+  --color-text-muted: var(--mao-stone-400);
+  --color-text-disabled: var(--mao-stone-300);
+  --color-text-inverse: var(--mao-parchment);
+
+  /* actions */
+  --color-action: var(--mao-forest-700);
+  --color-action-hover: var(--mao-forest-600);
+  --color-action-text: var(--mao-parchment);
+  --color-action-soft: var(--mao-forest-50);
+  --color-action-soft-strong: var(--mao-forest-100);
+  --color-link: var(--mao-forest-500);
+  --color-focus-ring: rgb(15 61 46 / 0.35);
+
+  /* status (stock and service) */
+  /* text on the soft backgrounds must reach WCAG AA (4.5:1) at --text-xs */
+  --color-success: var(--mao-forest-600); /* 5.3:1 on success-bg */
+  --color-success-bg: var(--mao-success-soft);
+  --color-warning: color-mix(in srgb, var(--mao-warning) 70%, var(--mao-stone-700)); /* 5.1:1 on warning-bg */
+  --color-warning-bg: var(--mao-warning-soft);
+  --color-danger: var(--mao-danger);
+  --color-danger-bg: var(--mao-danger-soft);
+  --color-info: var(--mao-info);
+  --color-info-bg: var(--mao-info-soft);
+  --color-skeleton: var(--mao-fog);
+  --color-skeleton-shine: var(--mao-paper);
+
+  /* typography */
+  --font-sans: 'Geist Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.25rem;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --leading-tight: 1.2;
+  --leading-normal: 1.55;
+  --tracking-tight: -0.015em;
+  --tracking-caps: 0.08em;
+
+  /* spacing (4 px grid) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+
+  /* shape: crisp structure, round interaction */
+  --radius-sm: 6px;
+  --radius-card: 10px;
+  --radius-control: 999px;
+  --border-width: 1px;
+
+  /* elevation */
+  --shadow-sm: 0 1px 2px rgb(20 18 14 / 0.06), 0 1px 1px rgb(20 18 14 / 0.04);
+  --shadow-md: 0 4px 8px -2px rgb(20 18 14 / 0.07), 0 2px 4px -2px rgb(20 18 14 / 0.05);
+
+  /* motion */
+  --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --duration-fast: 140ms;
+  --duration-base: 220ms;
+
+  /* sizing */
+  --control-height: 2.75rem; /* 44 px: minimum touch target */
+  --control-height-sm: 2.25rem;
+  --container-max: 72rem;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --color-bg: #0e1413;
+    --color-surface: #161e1b;
+    --color-surface-alt: #1e2724;
+    --color-border: #2a3431;
+    --color-border-strong: #3a4541;
+    --color-text: #eceae3;
+    --color-text-secondary: #c9c6bd;
+    --color-text-muted: #a5a298;
+    --color-text-disabled: #6b6e68;
+    --color-text-inverse: var(--mao-stone-700);
+    --color-action: var(--mao-forest-300);
+    --color-action-hover: var(--mao-forest-200);
+    --color-action-text: var(--mao-forest-900);
+    --color-action-soft: rgb(123 184 158 / 0.12);
+    --color-action-soft-strong: rgb(123 184 158 / 0.2);
+    --color-link: var(--mao-forest-300);
+    --color-focus-ring: rgb(123 184 158 / 0.45);
+    --color-success: #8fc7ad;
+    --color-success-bg: rgb(46 125 95 / 0.2);
+    --color-warning: #e2b868;
+    --color-warning-bg: rgb(184 110 26 / 0.2);
+    --color-danger: #e99a82;
+    --color-danger-bg: rgb(162 58 46 / 0.22);
+    --color-info: #9dbbda;
+    --color-info-bg: rgb(44 87 128 / 0.25);
+    --color-skeleton: #1e2724;
+    --color-skeleton-shine: #2a3431;
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow-md: 0 4px 12px rgb(0 0 0 / 0.4);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --color-bg: #0e1413;
+  --color-surface: #161e1b;
+  --color-surface-alt: #1e2724;
+  --color-border: #2a3431;
+  --color-border-strong: #3a4541;
+  --color-text: #eceae3;
+  --color-text-secondary: #c9c6bd;
+  --color-text-muted: #a5a298;
+  --color-text-disabled: #6b6e68;
+  --color-text-inverse: var(--mao-stone-700);
+  --color-action: var(--mao-forest-300);
+  --color-action-hover: var(--mao-forest-200);
+  --color-action-text: var(--mao-forest-900);
+  --color-action-soft: rgb(123 184 158 / 0.12);
+  --color-action-soft-strong: rgb(123 184 158 / 0.2);
+  --color-link: var(--mao-forest-300);
+  --color-focus-ring: rgb(123 184 158 / 0.45);
+  --color-success: #8fc7ad;
+  --color-success-bg: rgb(46 125 95 / 0.2);
+  --color-warning: #e2b868;
+  --color-warning-bg: rgb(184 110 26 / 0.2);
+  --color-danger: #e99a82;
+  --color-danger-bg: rgb(162 58 46 / 0.22);
+  --color-info: #9dbbda;
+  --color-info-bg: rgb(44 87 128 / 0.25);
+  --color-skeleton: #1e2724;
+  --color-skeleton-shine: #2a3431;
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 4px 12px rgb(0 0 0 / 0.4);
+  color-scheme: dark;
+}

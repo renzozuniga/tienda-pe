@@ -1,13 +1,16 @@
 import type { Health } from '@tienda/contracts';
 import { useEffect, useState } from 'react';
+import { Badge, EmptyState, Skeleton } from './components';
 import { getHealth } from './lib/api';
+import l from './layout.module.css';
 
-type State =
-  | { kind: 'loading' }
-  | { kind: 'ready'; health: Health }
-  | { kind: 'error' };
+type State = { kind: 'loading' } | { kind: 'ready'; health: Health } | { kind: 'error' };
 
-const LABEL = { ok: 'operativa', down: 'sin conexión', degraded: 'con problemas' } as const;
+const VIEW = {
+  ok: { label: 'operativa', tone: 'success' },
+  degraded: { label: 'con problemas', tone: 'warning' },
+  down: { label: 'sin conexión', tone: 'danger' },
+} as const;
 
 export function HealthStatus() {
   const [state, setState] = useState<State>({ kind: 'loading' });
@@ -25,22 +28,43 @@ export function HealthStatus() {
     return () => ctrl.abort();
   }, []);
 
-  if (state.kind === 'loading') return <p role="status">Verificando el estado del servicio…</p>;
+  if (state.kind === 'loading') {
+    return (
+      <div className={l.stack} aria-busy="true">
+        <p role="status" className="visually-hidden">
+          Verificando el estado del servicio…
+        </p>
+        <Skeleton variant="text" width="60%" />
+        <Skeleton variant="text" width="40%" />
+      </div>
+    );
+  }
+
   if (state.kind === 'error') {
     return (
-      <p role="status" data-state="error">
-        No pudimos conectar con la API. ¿Está corriendo <code>pnpm dev</code>?
-      </p>
+      <EmptyState
+        tone="danger"
+        title="Sin conexión con la API"
+        description="No pudimos conectar con la API. Revisa que pnpm dev esté corriendo y vuelve a cargar la página."
+      />
     );
   }
 
   const { status, db } = state.health;
   return (
-    <dl role="status" data-state={status} className="health">
+    <dl role="status" className={l.status}>
       <dt>API</dt>
-      <dd>{LABEL[status]}</dd>
+      <dd>
+        <Badge tone={VIEW[status].tone} dot>
+          {VIEW[status].label}
+        </Badge>
+      </dd>
       <dt>Base de datos</dt>
-      <dd>{LABEL[db]}</dd>
+      <dd>
+        <Badge tone={VIEW[db].tone} dot>
+          {VIEW[db].label}
+        </Badge>
+      </dd>
     </dl>
   );
 }

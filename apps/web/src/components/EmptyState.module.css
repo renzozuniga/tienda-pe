@@ -1,0 +1,30 @@
+.empty {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  padding: var(--space-10) var(--space-5);
+  text-align: center;
+  border: var(--border-width) dashed var(--color-border-strong);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+}
+.title {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+}
+.description {
+  max-width: 42ch;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+}
+.action {
+  margin-top: var(--space-2);
+}
+.danger {
+  border-color: var(--color-danger);
+  border-style: solid;
+  background: var(--color-danger-bg);
+}
+.danger .title {
+  color: var(--color-danger);
+}

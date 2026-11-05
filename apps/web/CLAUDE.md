@@ -19,6 +19,16 @@ pnpm --filter @tienda/web build        # tsc --noEmit + vite build
 - Some endpoints return a useful body with a non-2xx status (`/health` returns 503 with `degraded`). Handle the
   documented statuses explicitly instead of throwing on any non-2xx.
 
+## Design system (MAO Systems)
+
+- Tokens live in `src/styles/tokens.css`: raw MAO palette (`--mao-*`) plus the semantic layer (`--color-*`,
+  `--space-*`, `--text-*`, `--radius-*`). Components and pages use semantic tokens only, through CSS Modules.
+- Base components are in `src/components/` (Button, Input, Select, Card, Badge, StockBadge, Price, EmptyState,
+  Skeleton). The living catalog is at `/design` (`src/pages/DesignPage.tsx`); add new components there too.
+- `src/design-system.test.ts` fails on literal colors or raw `--mao-*` tokens outside `tokens.css`.
+- The `ui-standards` skill (`.claude/skills/ui-standards/`) has the full checklist for any UI change.
+- Fonts (Geist, Geist Mono) are self-hosted via `@fontsource-variable`; don't add Google Fonts links.
+
 ## UI rules
 
 - Mobile-first: every screen must work at 400 px wide.
