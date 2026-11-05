@@ -6,17 +6,18 @@ import { healthRoutes } from './routes/health.js';
 
 export type AppDeps = {
   db: DbPinger;
-  webOrigin?: string;
+  /** Origins allowed by CORS. Without it, no cross-origin request is allowed. */
+  webOrigins?: string[];
   logger?: boolean;
 };
 
-/** Construye la app sin escuchar en un puerto: server.ts la arranca y los tests usan app.inject(). */
-export async function buildApp({ db, webOrigin, logger = false }: AppDeps) {
+/** Builds the app without listening: server.ts starts it and tests use app.inject(). */
+export async function buildApp({ db, webOrigins, logger = false }: AppDeps) {
   const app = Fastify({ logger }).withTypeProvider<ZodTypeProvider>();
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
 
-  if (webOrigin) await app.register(cors, { origin: webOrigin });
+  if (webOrigins?.length) await app.register(cors, { origin: webOrigins });
   await app.register(healthRoutes, { db });
 
   return app;
