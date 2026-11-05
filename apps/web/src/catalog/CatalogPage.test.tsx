@@ -72,6 +72,19 @@ describe('CatalogPage', () => {
     expect(await screen.findByText('No hay productos en esta categoría')).toBeInTheDocument();
   });
 
+  it('explains that a malformed category does not exist instead of offering a retry', async () => {
+    mockApi({
+      '/categories': () => ({ status: 200, body: { items: [cafe] } }),
+      '/products': () => ({
+        status: 400,
+        body: { code: 'VALIDATION_ERROR', message: 'Revisa los datos enviados.', details: [] },
+      }),
+    });
+    renderRoute('/?categoria=Café');
+    expect(await screen.findByText('Esa categoría no existe')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Reintentar' })).not.toBeInTheDocument();
+  });
+
   it('shows the API error message and retries', async () => {
     let calls = 0;
     mockApi({

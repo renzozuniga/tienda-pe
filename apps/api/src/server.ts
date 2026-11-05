@@ -9,6 +9,8 @@ const app = await buildApp({
   db: prismaPinger(prisma),
   catalog: prismaCatalogRepo(prisma),
   webOrigins: env.WEB_ORIGIN,
+  trustProxy: env.TRUST_PROXY,
+  rateLimitPerMinute: env.RATE_LIMIT_PER_MINUTE,
   logger: true,
 });
 

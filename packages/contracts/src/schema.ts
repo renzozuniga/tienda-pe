@@ -85,7 +85,7 @@ export interface components {
         };
         Error: {
             /** @enum {string} */
-            code: "VALIDATION_ERROR" | "NOT_FOUND" | "INTERNAL_ERROR";
+            code: "VALIDATION_ERROR" | "NOT_FOUND" | "RATE_LIMITED" | "INTERNAL_ERROR";
             /** @description Mensaje en español para mostrar al usuario */
             message: string;
             /** @description Campos con problemas, solo en VALIDATION_ERROR */
@@ -134,6 +134,15 @@ export interface components {
         };
         /** @description El recurso no existe */
         NotFound: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["Error"];
+            };
+        };
+        /** @description Demasiadas solicitudes desde la misma IP; reintentar después de retry-after segundos */
+        RateLimited: {
             headers: {
                 [name: string]: unknown;
             };
@@ -205,6 +214,7 @@ export interface operations {
                     "application/json": components["schemas"]["CategoryList"];
                 };
             };
+            429: components["responses"]["RateLimited"];
             500: components["responses"]["InternalError"];
         };
     };
@@ -234,6 +244,7 @@ export interface operations {
                 };
             };
             400: components["responses"]["ValidationError"];
+            429: components["responses"]["RateLimited"];
             500: components["responses"]["InternalError"];
         };
     };
@@ -259,6 +270,7 @@ export interface operations {
             };
             400: components["responses"]["ValidationError"];
             404: components["responses"]["NotFound"];
+            429: components["responses"]["RateLimited"];
             500: components["responses"]["InternalError"];
         };
     };

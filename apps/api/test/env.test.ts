@@ -9,6 +9,14 @@ describe('loadEnv', () => {
     expect(env.API_PORT).toBe(3001);
     expect(env.API_HOST).toBe('127.0.0.1');
     expect(env.WEB_ORIGIN).toEqual(['http://localhost:5173']);
+    expect(env.TRUST_PROXY).toBe(false);
+    expect(env.RATE_LIMIT_PER_MINUTE).toBe(120);
+  });
+
+  it('reads TRUST_PROXY and the rate limit', () => {
+    const env = loadEnv({ ...base, TRUST_PROXY: 'true', RATE_LIMIT_PER_MINUTE: '60' });
+    expect(env.TRUST_PROXY).toBe(true);
+    expect(env.RATE_LIMIT_PER_MINUTE).toBe(60);
   });
 
   it('falls back to PORT when API_PORT is missing, as on Render', () => {

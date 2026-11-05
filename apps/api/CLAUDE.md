@@ -27,6 +27,8 @@ pnpm db:seed                                                         # idempoten
 - `src/lib/errors.ts` is the single error format `{ code, message, details? }`: validation errors become 400
   `VALIDATION_ERROR` with Spanish messages (Zod's `es` locale), unknown routes 404, anything else 500
   `INTERNAL_ERROR` without internal details.
+- `src/app.ts` registers helmet (security headers), rate limiting (per IP, `/health` exempt, in-memory store) and
+  compression. Behind Render, `TRUST_PROXY=true` makes limits use the buyer's IP from `X-Forwarded-For`.
 - Integration tests (`*.int.test.ts`) create their own uniquely named rows and delete them; they skip when
   `DATABASE_URL` is not set. Test files run sequentially (`fileParallelism: false`).
 

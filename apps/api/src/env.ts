@@ -6,6 +6,13 @@ const EnvSchema = z.object({
   DATABASE_URL: z.string({ error: MISSING_DATABASE_URL }).min(1, MISSING_DATABASE_URL),
   API_PORT: z.coerce.number().int().positive().default(3001),
   API_HOST: z.string().default('127.0.0.1'),
+  /** Set to true behind a reverse proxy (Render) so rate limits use the client's IP, not the proxy's. */
+  TRUST_PROXY: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((v) => v === 'true'),
+  /** Requests per minute per IP. */
+  RATE_LIMIT_PER_MINUTE: z.coerce.number().int().positive().default(120),
   /** Comma-separated list of origins allowed by CORS. */
   WEB_ORIGIN: z
     .string()

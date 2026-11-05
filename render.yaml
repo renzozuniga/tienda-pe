@@ -21,6 +21,8 @@ services:
         value: '0'
       - key: API_HOST
         value: 0.0.0.0
+      - key: TRUST_PROXY
+        value: 'true' # Render's proxy sets X-Forwarded-For; rate limits must count the buyer's IP
       - key: DATABASE_URL
         sync: false # Neon connection string (pooled), entered when the Blueprint is created
       - key: WEB_ORIGIN
