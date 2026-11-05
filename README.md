@@ -2,10 +2,10 @@
 
 Tienda en línea de productos peruanos con precios en soles (PEN). Interfaz en español latinoamericano.
 
-| Paquete | Stack |
-| --- | --- |
-| `apps/web` | React 19 · Vite · TypeScript · Vitest + Testing Library |
-| `apps/api` | Fastify 5 · TypeScript · Zod · Prisma 7 sobre PostgreSQL · Vitest |
+| Paquete              | Stack                                                                        |
+| -------------------- | ---------------------------------------------------------------------------- |
+| `apps/web`           | React 19 · Vite · TypeScript · Vitest + Testing Library                      |
+| `apps/api`           | Fastify 5 · TypeScript · Zod · Prisma 7 sobre PostgreSQL · Vitest            |
 | `packages/contracts` | `openapi.yaml` (contrato de la API) + tipos generados con openapi-typescript |
 
 ## Levantarlo en 5 minutos
@@ -38,22 +38,32 @@ También puedes probar la API directamente con `curl http://localhost:3001/healt
 
 ## Comandos
 
-| Comando | Qué hace |
-| --- | --- |
-| `pnpm dev` | API y web en paralelo, con recarga en caliente |
-| `pnpm test` | Vitest en todas las apps |
-| `pnpm typecheck` | `tsc --noEmit` en todo el workspace |
-| `pnpm build` | Compila la API (`apps/api/dist`) y la web (`apps/web/dist`) |
-| `pnpm db:up` / `pnpm db:down` | Levanta o detiene Postgres (los datos quedan en un volumen) |
-| `pnpm db:migrate` | `prisma migrate dev`: crea y aplica migraciones a partir de `schema.prisma` |
-| `pnpm db:seed` | Carga productos de ejemplo |
-| `pnpm contracts:generate` | Regenera `packages/contracts/src/schema.ts` desde `openapi.yaml` |
+| Comando                       | Qué hace                                                                    |
+| ----------------------------- | --------------------------------------------------------------------------- |
+| `pnpm dev`                    | API y web en paralelo, con recarga en caliente                              |
+| `pnpm test`                   | Vitest en todas las apps                                                    |
+| `pnpm typecheck`              | `tsc --noEmit` en todo el workspace                                         |
+| `pnpm lint` / `pnpm lint:fix` | ESLint en todo el workspace                                                 |
+| `pnpm format`                 | Prettier sobre todo el repo                                                 |
+| `pnpm check`                  | Lint, formato, typecheck y tests: lo mismo que debe pasar antes de un PR    |
+| `pnpm build`                  | Compila la API (`apps/api/dist`) y la web (`apps/web/dist`)                 |
+| `pnpm db:up` / `pnpm db:down` | Levanta o detiene Postgres (los datos quedan en un volumen)                 |
+| `pnpm db:migrate`             | `prisma migrate dev`: crea y aplica migraciones a partir de `schema.prisma` |
+| `pnpm db:seed`                | Carga productos de ejemplo                                                  |
+| `pnpm contracts:generate`     | Regenera `packages/contracts/src/schema.ts` desde `openapi.yaml`            |
+
+## Flujo de trabajo
+
+- `main` está protegida: cada cambio va en una rama (`feat/`, `fix/`, `docs/`, `chore/`) y entra por PR con squash merge.
+- Los commits siguen [Conventional Commits](https://www.conventionalcommits.org/es/v1.0.0/). husky corre lint-staged
+  antes de cada commit y commitlint revisa el mensaje.
+- `.claude/` tiene las skills, subagents y hooks del proyecto para Claude Code; el detalle está en `CLAUDE.md`.
 
 ## API
 
-| Método | Ruta | Respuesta |
-| --- | --- | --- |
-| `GET` | `/health` | `200 { status: "ok", db: "ok", uptimeSeconds }`, o `503 { status: "degraded", db: "down", … }` si Postgres no responde |
+| Método | Ruta      | Respuesta                                                                                                              |
+| ------ | --------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `GET`  | `/health` | `200 { status: "ok", db: "ok", uptimeSeconds }`, o `503 { status: "degraded", db: "down", … }` si Postgres no responde |
 
 El contrato completo está en [`packages/contracts/openapi.yaml`](packages/contracts/openapi.yaml).
 

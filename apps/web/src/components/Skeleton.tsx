@@ -15,7 +15,12 @@ export function Skeleton({ variant = 'block', width = '100%', height, className 
   return (
     <span
       aria-hidden="true"
-      className={cx(styles.skeleton, variant === 'text' && styles.text, variant === 'circle' && styles.circle, className)}
+      className={cx(
+        styles.skeleton,
+        variant === 'text' && styles.text,
+        variant === 'circle' && styles.circle,
+        className,
+      )}
       style={{ width, height: height ?? (variant === 'text' ? undefined : '1rem') }}
     />
   );

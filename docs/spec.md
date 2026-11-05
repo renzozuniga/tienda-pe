@@ -12,10 +12,10 @@ lentas y se venden productos que ya no hay.
 
 ## Usuarios
 
-| Usuario | Contexto | Lo que necesita |
-| --- | --- | --- |
-| **Comprador** | En Lima Metropolitana, compra desde el celular, a menudo con datos móviles. Paga con _Yape/Plin_ o transferencia. | Ver qué hay, cuánto cuesta en soles con _IGV_ incluido y pedir sin crear una cuenta. |
-| **Administrador** | El dueño de la tienda, desde el celular o una laptop. | Publicar productos, mantener el stock al día y atender los pedidos en orden. |
+| Usuario           | Contexto                                                                                                          | Lo que necesita                                                                      |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| **Comprador**     | En Lima Metropolitana, compra desde el celular, a menudo con datos móviles. Paga con _Yape/Plin_ o transferencia. | Ver qué hay, cuánto cuesta en soles con _IGV_ incluido y pedir sin crear una cuenta. |
+| **Administrador** | El dueño de la tienda, desde el celular o una laptop.                                                             | Publicar productos, mantener el stock al día y atender los pedidos en orden.         |
 
 ## Historias de usuario
 

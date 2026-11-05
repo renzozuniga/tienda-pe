@@ -57,12 +57,16 @@ export function DesignPage() {
       <header className={l.header}>
         <span className={l.eyebrow}>Design system · MAO Systems</span>
         <h1 className={l.title}>Componentes de Tienda PE</h1>
-        <p className={l.lead}>
-          Tokens y componentes base. Las pantallas nuevas se construyen solo con estas piezas.
-        </p>
+        <p className={l.lead}>Tokens y componentes base. Las pantallas nuevas se construyen solo con estas piezas.</p>
         <div className={l.row} role="group" aria-label="Tema">
           {(['system', 'light', 'dark'] as const).map((t) => (
-            <Button key={t} size="sm" variant={theme === t ? 'primary' : 'secondary'} aria-pressed={theme === t} onClick={() => pickTheme(t)}>
+            <Button
+              key={t}
+              size="sm"
+              variant={theme === t ? 'primary' : 'secondary'}
+              aria-pressed={theme === t}
+              onClick={() => pickTheme(t)}
+            >
               {{ system: 'Sistema', light: 'Claro', dark: 'Oscuro' }[t]}
             </Button>
           ))}
@@ -70,7 +74,9 @@ export function DesignPage() {
       </header>
 
       <section className={l.stack} aria-labelledby="colores">
-        <h2 id="colores" className={l.sectionTitle}>Colores semánticos</h2>
+        <h2 id="colores" className={l.sectionTitle}>
+          Colores semánticos
+        </h2>
         <div className={s.swatches}>
           {COLORS.map((token) => (
             <div key={token} className={s.swatch}>
@@ -82,7 +88,9 @@ export function DesignPage() {
       </section>
 
       <section className={l.stack} aria-labelledby="tipografia">
-        <h2 id="tipografia" className={l.sectionTitle}>Tipografía</h2>
+        <h2 id="tipografia" className={l.sectionTitle}>
+          Tipografía
+        </h2>
         <div className={l.stack}>
           {TYPE.map(([token, sample]) => (
             <div key={token} className={s.typeRow}>
@@ -98,7 +106,9 @@ export function DesignPage() {
       </section>
 
       <section className={l.stack} aria-labelledby="botones">
-        <h2 id="botones" className={l.sectionTitle}>Button</h2>
+        <h2 id="botones" className={l.sectionTitle}>
+          Button
+        </h2>
         <div className={l.row}>
           <Button>Agregar al carrito</Button>
           <Button variant="secondary">Ver detalle</Button>
@@ -113,10 +123,18 @@ export function DesignPage() {
       </section>
 
       <section className={l.stack} aria-labelledby="campos">
-        <h2 id="campos" className={l.sectionTitle}>Input y Select</h2>
+        <h2 id="campos" className={l.sectionTitle}>
+          Input y Select
+        </h2>
         <div className={s.grid2}>
           <Input label="Nombre completo" placeholder="María Quispe" autoComplete="name" />
-          <Input label="Celular" type="tel" inputMode="tel" placeholder="987 654 321" hint="Te escribiremos por WhatsApp para coordinar el pago." />
+          <Input
+            label="Celular"
+            type="tel"
+            inputMode="tel"
+            placeholder="987 654 321"
+            hint="Te escribiremos por WhatsApp para coordinar el pago."
+          />
           <Input label="DNI" inputMode="numeric" defaultValue="1234" error="El DNI debe tener 8 dígitos." />
           <Select label="Distrito de entrega" defaultValue="">
             <option value="" disabled>
@@ -132,13 +150,23 @@ export function DesignPage() {
       </section>
 
       <section className={l.stack} aria-labelledby="badges">
-        <h2 id="badges" className={l.sectionTitle}>Badge y StockBadge</h2>
+        <h2 id="badges" className={l.sectionTitle}>
+          Badge y StockBadge
+        </h2>
         <div className={l.row}>
           <Badge>Neutral</Badge>
-          <Badge tone="success" dot>Pagado</Badge>
-          <Badge tone="warning" dot>Pendiente de pago</Badge>
-          <Badge tone="danger" dot>Cancelado</Badge>
-          <Badge tone="info" dot>Enviado</Badge>
+          <Badge tone="success" dot>
+            Pagado
+          </Badge>
+          <Badge tone="warning" dot>
+            Pendiente de pago
+          </Badge>
+          <Badge tone="danger" dot>
+            Cancelado
+          </Badge>
+          <Badge tone="info" dot>
+            Enviado
+          </Badge>
         </div>
         <div className={l.row}>
           <StockBadge stock={40} />
@@ -149,7 +177,9 @@ export function DesignPage() {
       </section>
 
       <section className={l.stack} aria-labelledby="producto">
-        <h2 id="producto" className={l.sectionTitle}>Card, Price y composición</h2>
+        <h2 id="producto" className={l.sectionTitle}>
+          Card, Price y composición
+        </h2>
         <ul className={s.products}>
           {PRODUCTS.map((p) => (
             <Card as="li" key={p.name}>
@@ -170,7 +200,9 @@ export function DesignPage() {
       </section>
 
       <section className={l.stack} aria-labelledby="estados">
-        <h2 id="estados" className={l.sectionTitle}>Estados: vacío, error y carga</h2>
+        <h2 id="estados" className={l.sectionTitle}>
+          Estados: vacío, error y carga
+        </h2>
         <div className={s.grid2}>
           <EmptyState
             title="Tu carrito está vacío"

@@ -15,7 +15,10 @@ export type EmptyStateProps = {
 export function EmptyState({ title, description, action, tone = 'neutral', headingLevel = 3 }: EmptyStateProps) {
   const Heading = headingLevel === 2 ? 'h2' : 'h3';
   return (
-    <div className={cx(styles.empty, tone === 'danger' && styles.danger)} role={tone === 'danger' ? 'alert' : undefined}>
+    <div
+      className={cx(styles.empty, tone === 'danger' && styles.danger)}
+      role={tone === 'danger' ? 'alert' : undefined}
+    >
       <Heading className={styles.title}>{title}</Heading>
       {description && <p className={styles.description}>{description}</p>}
       {action && <div className={styles.action}>{action}</div>}

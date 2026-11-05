@@ -1,6 +1,7 @@
 import type { SelectHTMLAttributes } from 'react';
 import { cx } from '../lib/cx';
-import { Field, fieldStyles } from './Field';
+import { Field } from './Field';
+import fieldStyles from './Field.module.css';
 
 export type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, 'id'> & {
   label: string;

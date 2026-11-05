@@ -15,18 +15,14 @@ const _contractMatches: Equal<z.infer<typeof HealthSchema>, Health> = true;
 void _contractMatches;
 
 export const healthRoutes: FastifyPluginAsyncZod<{ db: DbPinger }> = async (app, { db }) => {
-  app.get(
-    '/health',
-    { schema: { response: { 200: HealthSchema, 503: HealthSchema } } },
-    async (_req, reply) => {
-      const uptimeSeconds = Math.round(process.uptime());
-      try {
-        await db.ping();
-        return { status: 'ok', db: 'ok', uptimeSeconds } as const;
-      } catch (err) {
-        app.log.warn({ err }, 'La base de datos no responde');
-        return reply.code(503).send({ status: 'degraded', db: 'down', uptimeSeconds });
-      }
-    },
-  );
+  app.get('/health', { schema: { response: { 200: HealthSchema, 503: HealthSchema } } }, async (_req, reply) => {
+    const uptimeSeconds = Math.round(process.uptime());
+    try {
+      await db.ping();
+      return { status: 'ok', db: 'ok', uptimeSeconds } as const;
+    } catch (err) {
+      app.log.warn({ err }, 'La base de datos no responde');
+      return reply.code(503).send({ status: 'degraded', db: 'down', uptimeSeconds });
+    }
+  });
 };
