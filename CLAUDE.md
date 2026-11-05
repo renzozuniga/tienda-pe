@@ -14,12 +14,24 @@ propose a new ADR instead.
 
 ```bash
 pnpm dev                                      # api :3001 + web :5173 (needs `pnpm db:up` first)
-pnpm test && pnpm typecheck                   # run both before calling a change done
+pnpm check                                    # lint + format check + typecheck + tests: run before calling a change done
 pnpm --filter @tienda/api test -- -t "503"    # single test by name (same pattern for @tienda/web)
 pnpm contracts:generate                       # after editing openapi.yaml
 ```
 
 Postgres runs in Docker on host port **5433** (ADR-0004).
+
+## AI kit (`.claude/`)
+
+- Skills: `add-endpoint` (contract-first API changes), `db-change` (schema and migrations), `money-pen`
+  (amounts in soles) and `ui-standards` (any UI change). Follow the matching skill for those tasks.
+- Subagents: `planner` (opus, writes plans to `docs/plans/`), `reviewer` (sonnet, read-only review of the
+  branch diff; run it before opening a PR) and `test-writer` (sonnet, adds missing tests).
+- Hooks: edits to `.env`, generated code and committed migrations are blocked; edited files are formatted
+  with Prettier; editing `openapi.yaml` regenerates the contract types; when a turn ends with TypeScript
+  changes, `pnpm typecheck` must pass.
+- Git hooks (husky): pre-commit runs lint-staged (ESLint + Prettier on staged files); commit-msg runs
+  commitlint (Conventional Commits, scopes `web`, `api`, `contracts`, `db`, `docs`, `ci`, `deps`, `claude`).
 
 ## Conventions
 

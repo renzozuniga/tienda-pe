@@ -43,11 +43,21 @@ También puedes probar la API directamente con `curl http://localhost:3001/healt
 | `pnpm dev`                    | API y web en paralelo, con recarga en caliente                              |
 | `pnpm test`                   | Vitest en todas las apps                                                    |
 | `pnpm typecheck`              | `tsc --noEmit` en todo el workspace                                         |
+| `pnpm lint` / `pnpm lint:fix` | ESLint en todo el workspace                                                 |
+| `pnpm format`                 | Prettier sobre todo el repo                                                 |
+| `pnpm check`                  | Lint, formato, typecheck y tests: lo mismo que debe pasar antes de un PR    |
 | `pnpm build`                  | Compila la API (`apps/api/dist`) y la web (`apps/web/dist`)                 |
 | `pnpm db:up` / `pnpm db:down` | Levanta o detiene Postgres (los datos quedan en un volumen)                 |
 | `pnpm db:migrate`             | `prisma migrate dev`: crea y aplica migraciones a partir de `schema.prisma` |
 | `pnpm db:seed`                | Carga productos de ejemplo                                                  |
 | `pnpm contracts:generate`     | Regenera `packages/contracts/src/schema.ts` desde `openapi.yaml`            |
+
+## Flujo de trabajo
+
+- `main` está protegida: cada cambio va en una rama (`feat/`, `fix/`, `docs/`, `chore/`) y entra por PR con squash merge.
+- Los commits siguen [Conventional Commits](https://www.conventionalcommits.org/es/v1.0.0/). husky corre lint-staged
+  antes de cada commit y commitlint revisa el mensaje.
+- `.claude/` tiene las skills, subagents y hooks del proyecto para Claude Code; el detalle está en `CLAUDE.md`.
 
 ## API
 
