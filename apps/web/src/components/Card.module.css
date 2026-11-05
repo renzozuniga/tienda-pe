@@ -1,0 +1,16 @@
+.card {
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-card);
+  padding: var(--space-5);
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+}
+.compact {
+  padding: var(--space-4);
+  gap: var(--space-3);
+}
+.raised {
+  box-shadow: var(--shadow-sm);
+}
