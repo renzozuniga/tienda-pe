@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Tienda PE API
-  version: 0.3.0
+  version: 0.4.0
   description: |
     API de la tienda. Fuente de verdad del contrato entre apps/api y apps/web.
     Los montos de dinero se expresan en céntimos (entero) y en soles (PEN), con IGV incluido.
@@ -83,6 +83,28 @@ paths:
               schema: { $ref: '#/components/schemas/ProductDetail' }
         '400': { $ref: '#/components/responses/ValidationError' }
         '404': { $ref: '#/components/responses/NotFound' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /cart/quote:
+    post:
+      operationId: quoteCart
+      summary: Cotiza un carrito con los precios y el stock actuales
+      description: |
+        El navegador solo guarda slug y cantidad. Esta operación devuelve los precios vigentes, ajusta cada
+        línea al stock disponible e informa qué productos ya no están a la venta. No reserva stock.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CartQuoteRequest' }
+      responses:
+        '200':
+          description: Cotización del carrito
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CartQuote' }
+        '400': { $ref: '#/components/responses/ValidationError' }
         '429': { $ref: '#/components/responses/RateLimited' }
         '500': { $ref: '#/components/responses/InternalError' }
 
@@ -205,3 +227,67 @@ components:
         nextCursor:
           type: [string, 'null']
           description: Cursor para pedir la siguiente página; null si no hay más
+
+    CartQuoteRequest:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          minItems: 1
+          maxItems: 30
+          items:
+            type: object
+            additionalProperties: false
+            required: [slug, quantity]
+            properties:
+              slug: { type: string, pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$', maxLength: 120 }
+              quantity: { type: integer, minimum: 1, maximum: 20 }
+
+    CartLine:
+      type: object
+      additionalProperties: false
+      required: [product, requestedQuantity, quantity, lineTotalCents, status]
+      properties:
+        product: { $ref: '#/components/schemas/ProductSummary' }
+        requestedQuantity:
+          type: integer
+          minimum: 1
+          description: Cantidad que pidió el comprador (si un slug se repite, se suman)
+        quantity:
+          type: integer
+          minimum: 0
+          description: Cantidad que se puede vender ahora, limitada por el stock
+        lineTotalCents:
+          type: integer
+          minimum: 0
+          description: priceCents × quantity, en céntimos con IGV incluido
+        status:
+          type: string
+          enum: [ok, limited, sold_out]
+          description: ok si alcanza el stock, limited si se ajustó la cantidad, sold_out si no hay stock
+
+    CartQuote:
+      type: object
+      additionalProperties: false
+      required: [lines, unavailable, itemCount, subtotalCents, currency]
+      properties:
+        lines:
+          type: array
+          items: { $ref: '#/components/schemas/CartLine' }
+        unavailable:
+          type: array
+          description: Slugs que no existen o ya no están a la venta
+          items: { type: string }
+        itemCount:
+          type: integer
+          minimum: 0
+          description: Suma de quantity de todas las líneas
+        subtotalCents:
+          type: integer
+          minimum: 0
+          description: Suma de lineTotalCents, con IGV incluido y sin envío
+        currency:
+          type: string
+          enum: [PEN]

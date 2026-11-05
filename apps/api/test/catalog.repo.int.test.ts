@@ -64,6 +64,12 @@ describe.skipIf(!url)('prismaCatalogRepo (Postgres)', () => {
     });
   });
 
+  it('finds active products by slug and leaves out inactive or unknown ones', async () => {
+    const found = await repo.getProductsBySlugs([`${tag}-a`, `${tag}-z`, `${tag}-nope`]);
+    expect(found.map((p) => p.slug)).toEqual([`${tag}-a`]);
+    expect(await repo.getProductsBySlugs([])).toEqual([]);
+  });
+
   it('lists only categories with active products', async () => {
     const slugs = (await repo.listCategories()).map((c) => c.slug);
     expect(slugs).toContain(category);

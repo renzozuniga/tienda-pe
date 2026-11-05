@@ -8,6 +8,7 @@ import { z } from 'zod';
 import type { CatalogRepo } from './catalog/repo.js';
 import type { DbPinger } from './db.js';
 import { registerErrorHandling } from './lib/errors.js';
+import { cartRoutes } from './routes/cart.js';
 import { catalogRoutes } from './routes/catalog.js';
 import { healthRoutes } from './routes/health.js';
 
@@ -42,7 +43,7 @@ export async function buildApp({
 
   // Security headers. The API only serves JSON, so helmet's defaults (including a strict CSP) fit as is.
   await app.register(helmet);
-  if (webOrigins?.length) await app.register(cors, { origin: webOrigins, methods: ['GET', 'HEAD'] });
+  if (webOrigins?.length) await app.register(cors, { origin: webOrigins, methods: ['GET', 'HEAD', 'POST'] });
   // In-memory store: fine for a single instance; move to a shared store if the API scales out.
   await app.register(rateLimit, {
     max: rateLimitPerMinute,
@@ -54,6 +55,7 @@ export async function buildApp({
 
   await app.register(healthRoutes, { db });
   await app.register(catalogRoutes, { catalog });
+  await app.register(cartRoutes, { catalog });
 
   return app;
 }

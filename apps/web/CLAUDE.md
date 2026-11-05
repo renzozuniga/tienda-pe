@@ -25,6 +25,9 @@ pnpm --filter @tienda/web build        # tsc --noEmit + vite build
   when the request never reached the API).
 - Server state lives in TanStack Query. Query definitions are in `src/lib/queries.ts` (`staleTime` 60 s, no
   retry on 4xx); components call `useQuery(productQuery(slug))` and so on, never ad hoc keys.
+- The cart (`src/cart/cartStore.ts`) is a `useSyncExternalStore` store over `localStorage` that keeps only slug
+  and quantity. Never store or trust prices on the client: `/carrito` re-quotes with `POST /cart/quote` and
+  `cartAdjustments` lowers or removes lines so the header count and the subtotal always match what can be sold.
 - Tests render real routes with `renderRoute(path)` and stub the API with `mockApi({...})` from
   `src/test-utils.tsx`.
 - The client calls `/api/*`. In dev, Vite strips the prefix and proxies to the API (`vite.config.ts`). In other

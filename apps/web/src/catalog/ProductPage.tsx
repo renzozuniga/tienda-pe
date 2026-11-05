@@ -5,6 +5,7 @@ import { Badge, Button, EmptyState, Price, Skeleton, StockBadge } from '../compo
 import l from '../layout.module.css';
 import { ApiError } from '../lib/api';
 import { productQuery } from '../lib/queries';
+import { AddToCartButton } from '../cart/AddToCartButton';
 import s from './catalog.module.css';
 
 export function ProductPage() {
@@ -57,6 +58,7 @@ export function ProductPage() {
             <h1 className={s.detailTitle}>{product.data.name}</h1>
             <Price cents={product.data.priceCents} size="lg" taxNote />
             <StockBadge stock={product.data.stock} />
+            <AddToCartButton slug={product.data.slug} name={product.data.name} stock={product.data.stock} withNote />
           </header>
           {product.data.description && <p className={s.description}>{product.data.description}</p>}
           <dl className={s.facts}>

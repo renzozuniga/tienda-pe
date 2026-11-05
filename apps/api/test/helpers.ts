@@ -20,6 +20,7 @@ export function fakeCatalog(overrides: Partial<CatalogRepo> = {}): CatalogRepo {
     listCategories: async () => [sampleProduct.category],
     listProducts: async () => ({ items: [sampleSummary], nextCursor: null }),
     getProduct: async (slug) => (slug === sampleProduct.slug ? sampleProduct : null),
+    getProductsBySlugs: async (slugs) => (slugs.includes(sampleSummary.slug) ? [sampleSummary] : []),
     ...overrides,
   };
 }
